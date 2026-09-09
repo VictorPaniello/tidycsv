@@ -1,0 +1,37 @@
+# Example tidycsv schema.
+#
+# Each field lists every header spelling a messy client export might use
+# ("aliases") alongside its canonical name. tidycsv matches header names
+# case-insensitively and ignores punctuation/spacing differences, so you only
+# need to list genuinely different wordings here (e.g. "E-mail" vs "Correo"),
+# not casing variants.
+
+fields:
+  - name: full_name
+    aliases: ["name", "Full Name", "customer name", "Nombre", "Nombre completo"]
+    type: string
+    required: true
+
+  - name: email
+    aliases: ["e-mail", "Email Address", "correo", "Correo electrónico"]
+    type: email
+    required: true
+
+  - name: signup_date
+    aliases: ["Signup Date", "fecha_alta", "created_at", "Fecha de alta"]
+    type: date
+    required: false
+
+  - name: amount
+    aliases: ["Amount", "Total ($)", "importe", "Importe (EUR)"]
+    type: currency
+    required: false
+
+  - name: phone
+    aliases: ["Phone", "Telefono", "Teléfono", "Contact Number"]
+    type: phone
+    required: false
+
+# Rows with the same value in every key column are treated as duplicates;
+# only the first occurrence is kept.
+key_columns: ["email"]

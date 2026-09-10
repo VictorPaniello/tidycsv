@@ -42,6 +42,18 @@ tidycsv examples/messy_client_export.csv \
   --report report.json
 ```
 
+- `input_file` (positional) and **`--schema` / `-s` are required** — there's
+  no sensible default schema, since every client's columns are different.
+  Omitting `--schema` fails immediately with `Missing option '--schema'`
+  rather than guessing at your data.
+- `--output` / `-o` and `--report` / `-r` are **optional** — they default to
+  `clean.csv` and `report.json` in the current directory. So the minimal
+  command is just:
+
+  ```bash
+  tidycsv examples/messy_client_export.csv --schema examples/schema.example.yaml
+  ```
+
 ```
           tidycsv -
    messy_client_export.csv

@@ -107,7 +107,17 @@ key_columns: ["email"]   # rows sharing this value (after cleaning) are deduplic
 ```
 
 Supported field types: `string`, `email`, `date` (normalized to ISO 8601),
-`currency` (strips symbols/separators), `integer`, `phone`.
+`currency`, `integer`, `phone`.
+
+`currency` handles both US/UK-style (`"1,200.50"`) and EU-style
+(`"1.200,50"` / `"99,99"`) separators — it infers which character is the
+decimal point rather than blindly stripping commas. When only a comma is
+present, exactly 2 trailing digits is treated as a decimal point (`"99,99"`
+→ `99.99`), anything else as a thousands separator (`"12,345"` → `12345.00`).
+This is a heuristic, not a locale setting, so a genuinely ambiguous input
+(a comma-decimal amount that happens to have 3 trailing digits, e.g. a
+non-EUR currency with 3 decimal places) can still be misread — there's no
+way to know the source locale from the string alone.
 
 Any input column not mentioned in the schema is dropped rather than passed
 through silently — the schema is the contract for what "clean" means, not a

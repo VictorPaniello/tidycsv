@@ -14,7 +14,7 @@ from dateutil import parser as date_parser
 from tidycsv.schema import FieldType, Schema, _normalize_header
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-CURRENCY_STRIP_RE = re.compile(r"[^\d.\-]")
+CURRENCY_KEEP_RE = re.compile(r"[^\d,.\-]")
 PHONE_STRIP_RE = re.compile(r"[^\d+]")
 
 
@@ -90,12 +90,45 @@ def _coerce_date(value: str) -> tuple[str | None, str | None]:
 
 
 def _coerce_currency(value: str) -> tuple[str | None, str | None]:
+    """Parse a currency string into a plain "1234.56" decimal, handling both
+    US/UK-style ("1,200.50") and EU-style ("1.200,50" / "99,99") separators.
+
+    Which character is the decimal point is genuinely ambiguous from the
+    string alone when only a comma is present - "99,99" almost always means
+    99.99, but "12,345" almost always means 12345. We resolve that with a
+    heuristic (see inline comments) rather than silently guessing wrong the
+    way a naive digit-strip would: a plain `[^\\d.-]` strip turns "99,99"
+    into "9999", off by two orders of magnitude, with no error raised."""
     cleaned = value.strip()
     if not cleaned:
         return None, None
-    stripped = CURRENCY_STRIP_RE.sub("", cleaned)
+
+    kept = CURRENCY_KEEP_RE.sub("", cleaned)
+    if not kept:
+        return cleaned, "unparseable currency amount"
+
+    last_comma = kept.rfind(",")
+    last_dot = kept.rfind(".")
+
+    if last_comma != -1 and last_dot != -1:
+        # Both separators present: whichever comes last is the decimal point,
+        # the other is a thousands separator ("1,200.50" vs "1.200,50").
+        if last_comma > last_dot:
+            normalized = kept.replace(".", "").replace(",", ".")
+        else:
+            normalized = kept.replace(",", "")
+    elif last_comma != -1:
+        # Only a comma. Currency amounts almost never carry 3+ decimal
+        # digits, so exactly 2 digits after the last comma means it's a
+        # decimal point ("99,99" -> 99.99); anything else means thousands
+        # separator ("12,345" -> 12345, "1,234,567" -> 1234567).
+        digits_after = len(kept) - last_comma - 1
+        normalized = kept.replace(",", ".") if digits_after == 2 else kept.replace(",", "")
+    else:
+        normalized = kept
+
     try:
-        return f"{float(stripped):.2f}", None
+        return f"{float(normalized):.2f}", None
     except ValueError:
         return cleaned, "unparseable currency amount"
 

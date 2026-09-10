@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from tidycsv.cleaner import clean
+from tidycsv.cleaner import _coerce_currency, clean
 from tidycsv.schema import Schema
 
 FIXTURES = Path(__file__).parent.parent / "examples"
@@ -63,3 +63,25 @@ def test_unparseable_date_is_flagged_and_original_value_kept(result):
         i for i in result.issues if i.field == "signup_date" and i.issue == "unparseable date"
     ]
     assert len(date_issues) == 1
+
+
+# Regression coverage for a real bug found while live-demoing the tool: a naive
+# digit-strip on "99,99" (EU decimal comma) silently produced "9999.00" - two
+# orders of magnitude wrong, with no issue flagged. _coerce_currency now infers
+# which separator is the decimal point instead of stripping commas blindly.
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("99,99", "99.99"),  # EU decimal comma - the bug that was found live
+        ("1,200.50", "1200.50"),  # US/UK: comma=thousands, dot=decimal
+        ("1.200,50", "1200.50"),  # EU: dot=thousands, comma=decimal
+        ("12,345", "12345.00"),  # comma-only, 3+ trailing digits -> thousands
+        ("1,234,567", "1234567.00"),  # multiple thousands separators
+        ("€980", "980.00"),  # currency symbol, no separators
+        ("$1,200.50", "1200.50"),  # currency symbol + thousands separator
+    ],
+)
+def test_coerce_currency_handles_us_and_eu_separator_conventions(raw, expected):
+    value, issue = _coerce_currency(raw)
+    assert value == expected
+    assert issue is None

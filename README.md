@@ -139,6 +139,10 @@ pytest
 ruff check .
 ```
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
 ## License
 
 MIT

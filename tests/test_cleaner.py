@@ -85,3 +85,18 @@ def test_coerce_currency_handles_us_and_eu_separator_conventions(raw, expected):
     value, issue = _coerce_currency(raw)
     assert value == expected
     assert issue is None
+
+
+# Regression coverage for a real bug found while integrating tidycsv into a
+# second project (databridge): on pandas 3.x, assigning a plain Python list
+# containing None into a DataFrame column silently upcasts None to the float
+# NaN, because pandas' new default "str" column dtype doesn't represent
+# missing values as None the way the old "object" dtype did. clean()'s own
+# tests never caught this because they only inspect .to_csv() output, where
+# None and NaN both render as an empty cell - the bug only shows up when
+# code reads a cell's Python value directly, e.g. before inserting it into a
+# database column.
+def test_missing_optional_field_is_none_not_nan(result):
+    # "empty@example.com" has full_name and phone blank in the source fixture.
+    row = result.clean_df.loc[result.clean_df["email"] == "empty@example.com"].iloc[0]
+    assert row["phone"] is None

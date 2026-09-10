@@ -183,7 +183,15 @@ def coerce_and_validate(df: pd.DataFrame, schema: Schema) -> tuple[pd.DataFrame,
             if value is None and spec.required:
                 issues.append(RowIssue(idx, spec.name, "required field is empty"))
             new_values.append(value)
-        out[spec.name] = new_values
+        # Explicit dtype=object, not a plain list assignment: pandas' default
+        # "str" dtype (the default since pandas 3.0) silently turns a mixed
+        # str/None list into str/float('nan') on assignment, so a value we
+        # returned as Python None comes back out of the DataFrame as the
+        # float NaN instead - invisible in this module's own tests (which
+        # only check .to_csv() output, where NaN and None both render as an
+        # empty cell) but a real bug for any caller reading cell values
+        # directly, e.g. inserting them into a database column typed str.
+        out[spec.name] = pd.Series(new_values, index=out.index, dtype=object)
 
     return out, issues
 

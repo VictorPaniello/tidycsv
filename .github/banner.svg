@@ -1,0 +1,56 @@
+<svg viewBox="0 0 1200 300" width="1200" height="300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="tidycsv: a messy CSV/Excel export becomes a clean, validated dataset">
+  <defs>
+    <style>
+      .wordmark { font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif; font-weight: 700; }
+      .tagline { font-family: ui-sans-serif, "Segoe UI", system-ui, sans-serif; font-weight: 400; }
+      .pipeline { font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace; font-weight: 500; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="300" fill="#0c0a09" />
+
+  <!-- left: identity -->
+  <text x="64" y="140" class="wordmark" font-size="60" fill="#fafaf9" letter-spacing="-1">tidy<tspan fill="#34d399">csv</tspan></text>
+  <text x="65" y="184" class="tagline" font-size="19" fill="#a8a29e">A messy CSV/Excel export becomes a clean, validated dataset.</text>
+  <text x="65" y="222" class="pipeline" font-size="13.5" fill="#78716c" letter-spacing="0.3">csv/excel  →  schema.yaml  →  clean.csv + report.json</text>
+
+  <!-- divider -->
+  <line x1="620" y1="72" x2="620" y2="230" stroke="#292524" stroke-width="1" />
+
+  <!-- right: the pipeline, drawn -->
+  <g>
+    <!-- messy cells (amber, scattered, mismatched shapes = mismatched headers/types) -->
+    <g fill="none" stroke="#f59e0b" stroke-width="2.5">
+      <rect x="668" y="104" width="18" height="14" rx="2" transform="rotate(-9 677 111)" />
+      <circle cx="712" cy="98" r="8" />
+      <rect x="672" y="150" width="16" height="16" rx="8" transform="rotate(6 680 158)" />
+      <circle cx="726" cy="140" r="6" />
+      <rect x="690" y="184" width="20" height="13" rx="2" transform="rotate(-4 700 190)" />
+      <circle cx="666" cy="132" r="5" />
+    </g>
+
+    <!-- schema funnel: wide/inconsistent in, narrow/valid out -->
+    <path d="M 742 96 L 934 96 L 862 168 L 814 168 Z" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linejoin="round" />
+    <line x1="800" y1="96" x2="800" y2="130" stroke="#34d399" stroke-width="1.5" opacity="0.4" />
+    <line x1="876" y1="96" x2="876" y2="130" stroke="#34d399" stroke-width="1.5" opacity="0.4" />
+    <path d="M 826 145 L 838 157 L 858 133" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- clean rows (emerald, aligned) -->
+    <g fill="#34d399">
+      <rect x="944" y="120" width="14" height="14" rx="3" />
+      <rect x="972" y="120" width="14" height="14" rx="3" />
+      <rect x="1000" y="120" width="14" height="14" rx="3" />
+      <rect x="944" y="148" width="14" height="14" rx="3" />
+      <rect x="972" y="148" width="14" height="14" rx="3" />
+      <rect x="1000" y="148" width="14" height="14" rx="3" />
+      <rect x="944" y="176" width="14" height="14" rx="3" />
+      <rect x="972" y="176" width="14" height="14" rx="3" />
+      <rect x="1000" y="176" width="14" height="14" rx="3" />
+    </g>
+
+    <!-- report.json -->
+    <line x1="1024" y1="150" x2="1058" y2="150" stroke="#34d399" stroke-width="2" opacity="0.7" />
+    <path d="M 1052 143 L 1062 150 L 1052 157" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" />
+    <path d="M 1074 128 h30 v40 h-30 Z M 1080 140 h18 M 1080 148 h18 M 1080 156 h12" fill="none" stroke="#34d399" stroke-width="1.5" stroke-linejoin="round" opacity="0.75" />
+  </g>
+</svg>

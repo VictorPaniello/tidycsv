@@ -1,4 +1,4 @@
-# tidycsv
+![tidycsv](.github/banner.svg)
 
 A config-driven CLI that turns a messy client CSV/Excel export into a clean,
 validated dataset — plus a report of exactly what it fixed and what it
